@@ -1,8 +1,7 @@
-runtime: nodejs18  # Use the correct runtime version
-instance_class: F2  # Adjust based on your needs (e.g., F1, F2, etc.)
-entrypoint: npm start  # Ensure this matches the start script in your package.json
-env: standard  # Use 'standard' for the Standard environment
-
+runtime: nodejs18
+env: standard
+instance_class: F2
 handlers:
-  - url: /.*
-    script: auto  # Serves everything through your Node.js app
+- url: /static
+  static_dir: public
+
