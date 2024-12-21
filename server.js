@@ -21,16 +21,16 @@ app.get('/', (req, res) => {
 
 // Route to handle form submission
 app.post('/scrape', async (req, res) => {
-    const { businessQuery, locationQuery, topN } = req.body;
+    const { businessQuery, locationQuery, radius } = req.body;
 
-    if (topN > 500) {
-        return res.status(400).json({ error: 'Top N results must be less than or equal to 500.' });
+    if (radius > 5000) {
+        return res.status(400).json({ error: 'Radius must be less than or equal to 5000.' });
     }
 
     try {
         // Replace with your actual Google Function API endpoint
         const apiUrl = process.env.URL;
-        const response = await axios.post(apiUrl, { businessQuery, locationQuery, topN });
+        const response = await axios.post(apiUrl, { businessQuery, locationQuery, radius });
         res.json(response.data);
     } catch (error) {
         console.error(error);

@@ -31,9 +31,9 @@
                 <input type="text" class="form-control" id="locationQuery" name="locationQuery" required>
             </div>
             <div class="mb-3">
-                <label for="topN" class="form-label">Top N Results</label>
-                <input type="number" class="form-control" id="topN" name="topN" min="1" max="500" required>
-                <div class="form-text">Enter a number up to 500.</div>
+                <label for="radius" class="form-label">Radius (Meter)</label>
+                <input type="number" class="form-control" id="radius" name="radius" min="1" max="5000" required>
+                <div class="form-text">Enter a number up to 5000 (Meter).</div>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
@@ -84,18 +84,22 @@
             const payload = {
                 businessQuery: formData.get('businessQuery'),
                 locationQuery: formData.get('locationQuery'),
-                topN: parseInt(formData.get('topN'), 10),
+                radius: parseInt(formData.get('radius'), 10),
             };
 
-            if (payload.topN > 500) {
-                errorDiv.textContent = 'Top N results must be less than or equal to 500.';
+            if (payload.radius > 5000) {
+                errorDiv.textContent = 'Radius must be less than or equal to 5000.';
                 loader.style.display = 'none'; // Hide loader if error
                 return;
             }
 
             try {
                 const response = await axios.post('/scrape', payload);
-                results = response.data[0].data;
+                try{
+                    results = response.data.data;
+                } catch(error){
+                    results = response.data[0].data;
+                }
                 displayResults(1);
             } catch (error) {
                 errorDiv.textContent = error.response?.data?.error || 'An error occurred while fetching data.';
@@ -141,9 +145,9 @@
 
         downloadCSVButton.addEventListener('click', () => {
             let csvContent = 'data:text/csv;charset=utf-8,';
-            csvContent += 'Name,Address,Location,Type,Rating,Rating Count,Email,Phone Number,Website\n';
+            csvContent += 'Name|Address|Location|Type|Rating|Rating Count|Email|Phone Number|Website\n';
             results.forEach((result) => {
-                csvContent += `${result.name},${result.address},${result.location},${result.type},${result.rating},${result.ratingCount},${result.contact},${result.website}\n`;
+                csvContent += `${result.name}|${result.address}|${result.location}|${result.type}|${result.rating}|${result.ratingCount}|${result.contact}|${result.website}\n`;
             });
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement('a');
